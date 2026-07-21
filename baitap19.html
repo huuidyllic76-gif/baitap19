@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bài tập 19 - Game Ghép Thẻ</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#f4f4f4;text-align:center;padding:20px}
+header{margin-bottom:20px}
+#moves{margin:10px;font-size:20px;font-weight:bold}
+.game-board{max-width:600px;margin:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+.card{aspect-ratio:1;perspective:1000px;cursor:pointer}
+.card:hover{transform:scale(1.05)}
+.card-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:.6s}
+.card.flip .card-inner{transform:rotateY(180deg)}
+.front,.back{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px;border-radius:10px;backface-visibility:hidden}
+.front{background:#3498db;color:#fff}.back{background:#2ecc71;transform:rotateY(180deg)}
+button{margin-top:20px;padding:10px 20px}
+@media(max-width:768px){.game-board{grid-template-columns:repeat(2,1fr)}}
+</style></head>
+<body><header><h1>🎮 Game Ghép Đôi Thẻ</h1><p id="moves">Số lượt: 0</p></header>
+<main><section class="game-board" id="board"></section><button onclick="resetGame()">Chơi lại</button></main>
+<script>
+const symbols=["🍎","🍎","🍌","🍌","🍇","🍇","🍓","🍓"];
+let first=null,second=null,lock=false,moves=0,matched=0;
+const board=document.getElementById("board");
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+function createBoard(){board.innerHTML="";shuffle(symbols);symbols.forEach(s=>{let c=document.createElement("div");c.className="card";c.dataset.symbol=s;c.innerHTML='<div class="card-inner"><div class="front">?</div><div class="back">'+s+'</div></div>';c.onclick=flip;board.appendChild(c);});}
+function flip(){if(lock||this===first)return;this.classList.add("flip");if(!first){first=this;return;}second=this;moves++;movesEl.textContent="Số lượt: "+moves;check();}
+const movesEl=document.getElementById("moves");
+function check(){if(first.dataset.symbol===second.dataset.symbol){matched++;first.onclick=null;second.onclick=null;reset();if(matched===4)setTimeout(()=>alert("🎉 Bạn thắng sau "+moves+" lượt!"),300);}else{lock=true;setTimeout(()=>{first.classList.remove("flip");second.classList.remove("flip");reset();},800);}}
+function reset(){first=second=null;lock=false;}
+function resetGame(){moves=0;matched=0;movesEl.textContent="Số lượt: 0";first=second=null;lock=false;createBoard();}
+createBoard();
+</script></body></html>
